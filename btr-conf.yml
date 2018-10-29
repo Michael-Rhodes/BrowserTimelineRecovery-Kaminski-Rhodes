@@ -1,0 +1,45 @@
+# File: btr-conf.yml
+# Description: Used to specify the location of file for the Browser Timeline
+#	Recovery tool (btr.py). File locations are represented as lists because
+#	some browsers store data across multiple files.
+
+Browsers:
+  # specify version of chrome you are referencing 
+  - chrome:
+    Linux:
+      - Cache:
+        - default
+      - Cookies:
+        - default
+      - History:
+        - default
+    Windows:
+      - Cache:
+        - default
+      - Cookies:
+        - default
+      - History:
+        - default
+  - firefox:
+    Linux:
+      - Cache:
+        - default
+      - Cookies:
+        - default
+      - History:
+        - default
+    Windows:
+      - Cache:
+        - default
+      - Cookies:
+        - default
+      - History:
+        - default
+  - Edge:
+    Windows:
+      - Cache:
+        - default
+      - Cookies:
+        - default
+      - History:
+        - default
