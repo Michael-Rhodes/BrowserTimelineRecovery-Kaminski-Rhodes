@@ -3,43 +3,42 @@
 #	Recovery tool (btr.py). File locations are represented as lists because
 #	some browsers store data across multiple files.
 
-Browsers:
-  # specify version of chrome you are referencing 
-  - chrome:
-    Linux:
-      - Cache:
-        - default
-      - Cookies:
-        - default
-      - History:
-        - default
-    Windows:
-      - Cache:
-        - default
-      - Cookies:
-        - default
-      - History:
-        - default
-  - firefox:
-    Linux:
-      - Cache:
-        - default
-      - Cookies:
-        - default
-      - History:
-        - default
-    Windows:
-      - Cache:
-        - default
-      - Cookies:
-        - default
-      - History:
-        - default
-  - Edge:
-    Windows:
-      - Cache:
-        - default
-      - Cookies:
-        - default
-      - History:
-        - default
+Linux:
+  chrome:
+    - Cache:
+      - default
+    - Cookies:
+      - default
+    - History:
+      - default
+  firefox:
+    - Cache:
+      - default
+    - Cookies:
+      - default
+    - History:
+      - default
+
+
+Windows:
+  chrome:
+    - Cache:
+      - default
+    - Cookies:
+      - default
+    - History:
+      - default
+  firefox:
+    - Cache:
+      - default
+    - Cookies:
+      - default
+    - History:
+      - default
+  edge:
+    - Cache:
+      - default
+    - Cookies:
+      - default
+    - History:
+      - default
