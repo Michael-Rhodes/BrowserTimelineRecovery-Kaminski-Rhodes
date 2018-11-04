@@ -6,6 +6,7 @@
 
 import argparse
 import yaml
+import sqlite3
 from platform import system
 from sys import exit
 from os import listdir
@@ -50,7 +51,7 @@ dumpOptions = ['all','history','cookies','cache']
 
 ### Functions ###
 
-# retieves the command line arguments
+# retrieves the command line arguments
 def getArgs():
 	desc = "Detects inconsistencies in browsing data or dumps browsing data"
 	parser = argparse.ArgumentParser(description=desc)
@@ -69,7 +70,7 @@ def getArgs():
 	return parser.parse_args()
 
 
-#gets the name of the randomly generated folder for firefox
+# gets the name of the randomly generated folder for firefox
 def getFirefoxChars(user):
 	try:
 		dirs = listdir('/home/'+user+'/.mozilla/firefox/')
@@ -153,9 +154,36 @@ def getCache(filename, browser):
 	return
 
 def getHistory(filename, browser):
+	connection = sqlite3.connect(filename)
+	connection.text_factory = str
+	cur = connection.cursor()
+	History = list()
+	
+	if(browser == "firefox"):
+		for row in (cur.execute('SELECT url, title, last_visit_date, guid FROM moz_places')):
+			History.append(list(row))
+		return History
+	elif(browser == "chrome"):
+		for row in (cur.execute('SELECT url, title, visit_count, last_visit_time FROM urls')):
+			History.append(list(row))
+		return History
+	# Insert else statement to get edge history. Stored in a sqlite file?
 	return
 
 def getCookies(filename, browser):
+	connection = sqlite3.connect(filename)
+	connection.text_factory = str
+	cur = connection.cursor()
+	Cookies = list()
+
+	if(browser == "firefox"):
+		for row in (cur.execute('SELECT host, name, creationTime, expiry, lastAccessed FROM moz_cookies')):
+			Cookies.append(list(row))
+		return Cookies
+	elif(browser == "chrome"):
+		for row in (cur.execute('SELECT host_key, name, creation_utc, expires_utc, last_access_utc FROM cookies')):
+			Cookies.append(list(row))
+		return Cookies
 	return
 
 def printData(data):
@@ -167,4 +195,8 @@ if __name__ == '__main__':
 	if not user:
 		user = getuser()
 	getConfig(system(), args.config, args.browser, user)
-	print(yaml.dump(paths))
+	if(args.dump == "history"):
+		print(getHistory(paths[system()][args.browser][args.dump][0], args.browser))
+	elif(args.dump == "cookies"):
+		print(getCookies(paths[system()][args.browser][args.dump][0], args.browser))
+	#print(yaml.dump(paths))
