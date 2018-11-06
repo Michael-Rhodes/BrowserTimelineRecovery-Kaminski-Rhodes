@@ -82,8 +82,6 @@ def getFirefoxChars(user):
 		return None
 
 # populates the paths dict based on the system type and provided args.
-# If no args are supplied, all browser data for all browsers for each user will
-# be used.
 def getConfig(systemType, configFile, browser, user):
 	# check if config file is present
 	if configFile:
@@ -100,7 +98,7 @@ def getConfig(systemType, configFile, browser, user):
 			print ("ERROR: Invalid configuration file.\n",e)
 			exit()
 
-	# add file paths for all users if not already set in config
+	# add file paths if not already set in config
 	for browsers in paths[systemType].items():
 		if browsers[0] == 'chrome':
 			if systemType == 'Linux':
@@ -153,6 +151,8 @@ def getConfig(systemType, configFile, browser, user):
 def getCache(filename, browser):
 	return
 
+#TODO verify file exists in case a user gives wrong path or if not installed
+#TODO get from Edge
 def getHistory(filename, browser):
 	connection = sqlite3.connect(filename)
 	connection.text_factory = str
@@ -170,6 +170,9 @@ def getHistory(filename, browser):
 	# Insert else statement to get edge history. Stored in a sqlite file?
 	return
 
+
+#TODO verify file exists in case a user gives wrong path or if not installed
+#TODO get from Edge
 def getCookies(filename, browser):
 	connection = sqlite3.connect(filename)
 	connection.text_factory = str
@@ -189,12 +192,22 @@ def getCookies(filename, browser):
 def printData(data):
 	return
 
+
+# compare timestamps from different sources to find any discrepancies 
+def analyzeTimestamps(history, cookies):
+discrepancies = []
+# loop through cookies and compare each entry to the timestamps in history
+	# if creation date doesn't match a timestamp (with a given window)
+	# in history, append the cookie to the list
+
+
 if __name__ == '__main__':
 	args = getArgs()
 	user = args.user
 	if not user:
 		user = getuser()
 	getConfig(system(), args.config, args.browser, user)
+	print
 	if(args.dump == "history"):
 		print(getHistory(paths[system()][args.browser][args.dump][0], args.browser))
 	elif(args.dump == "cookies"):
