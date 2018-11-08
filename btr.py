@@ -56,7 +56,7 @@ def getArgs():
 	desc = "Detects inconsistencies in browsing data or dumps browsing data"
 	parser = argparse.ArgumentParser(description=desc)
 	parser.add_argument('-b','--browser',choices=acceptedBrowsers,dest='browser',
-		help="Select a browser to examine")
+		help="Select a browser to examine", required=True)
 	parser.add_argument('-d','--dump',choices=dumpOptions,dest='dump',
 		help="Dump data in CSV format and quit")
 	parser.add_argument('-u','--user',dest='user',
@@ -82,7 +82,7 @@ def getFirefoxChars(user):
 		return None
 
 # populates the paths dict based on the system type and provided args.
-def getConfig(systemType, configFile, browser, user):
+def setConfig(systemType, configFile, browser, user):
 	# check if config file is present
 	if configFile:
 		# populate paths
@@ -162,13 +162,14 @@ def getHistory(filename, browser):
 	if(browser == "firefox"):
 		for row in (cur.execute('SELECT url, title, last_visit_date, guid FROM moz_places')):
 			History.append(list(row))
-		return History
 	elif(browser == "chrome"):
 		for row in (cur.execute('SELECT url, title, visit_count, last_visit_time FROM urls')):
 			History.append(list(row))
-		return History
+
 	# Insert else statement to get edge history. Stored in a sqlite file?
-	return
+
+	# return list that contains only entries with populated timestamps
+	return list(hist for hist in History if hist[2])
 
 
 #TODO verify file exists in case a user gives wrong path or if not installed
@@ -195,21 +196,32 @@ def printData(data):
 
 # compare timestamps from different sources to find any discrepancies 
 def analyzeTimestamps(history, cookies):
-discrepancies = []
-# loop through cookies and compare each entry to the timestamps in history
-	# if creation date doesn't match a timestamp (with a given window)
-	# in history, append the cookie to the list
+	discrepancies = []
+	win = 3600000	# time window in microseconds
 
+	# loop through cookies and compare each entry to the timestamps in history
+	for c in cookies:
+		# if creation date doesn't match a timestamp (with a given window)
+		# append the cookie to the list
+		matchHist = [h for h in history if c[2]-win <= h[2] <= c[2]+win]
+		if len(matchHist) == 0:
+			discrepancies.append(c)
+	return discrepancies
 
 if __name__ == '__main__':
 	args = getArgs()
 	user = args.user
 	if not user:
 		user = getuser()
-	getConfig(system(), args.config, args.browser, user)
-	print
+	setConfig(system(), args.config, args.browser, user)
+	history = getHistory(paths[system()][args.browser]['history'][0], args.browser)
+	cookies = getCookies(paths[system()][args.browser]['cookies'][0], args.browser)
+	buf = analyzeTimestamps(history, cookies)
+	print ('history',len(history))
+	print ('cookies',len(cookies))
+	print ('buf',len(buf))
 	if(args.dump == "history"):
-		print(getHistory(paths[system()][args.browser][args.dump][0], args.browser))
+		print(history)
 	elif(args.dump == "cookies"):
-		print(getCookies(paths[system()][args.browser][args.dump][0], args.browser))
+		print(cookies)
 	#print(yaml.dump(paths))
