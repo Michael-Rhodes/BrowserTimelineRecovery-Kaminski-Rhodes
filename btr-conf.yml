@@ -35,10 +35,4 @@ Windows:
       - default
     - History:
       - default
-  edge:
-    - Cache:
-      - default
-    - Cookies:
-      - default
-    - History:
-      - default
+

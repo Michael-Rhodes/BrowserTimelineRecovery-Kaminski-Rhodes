@@ -9,7 +9,7 @@ import yaml
 import sqlite3
 from platform import system
 from sys import exit
-from os import listdir
+from os import listdir, path
 from getpass import getuser
 
 ### GLOBAL VARIABLES ###
@@ -37,15 +37,10 @@ paths = {
 			'cache': [],
 			'cookies': [],
 			'history': []
-		},
-		'edge':{
-			'cache': [],
-			'cookies': [],
-			'history': []
 		}
 	}
 }
-acceptedBrowsers = ['chrome','firefox','edge']
+acceptedBrowsers = ['chrome','firefox']
 dumpOptions = ['all','history','cookies','cache']
 
 
@@ -73,7 +68,10 @@ def getArgs():
 # gets the name of the randomly generated folder for firefox
 def getFirefoxChars(user):
 	try:
-		dirs = listdir('/home/'+user+'/.mozilla/firefox/')
+		if (system() == 'Linux'):
+			dirs = listdir('/home/'+user+'/.mozilla/firefox/')
+		else:
+			dirs = listdir('C:\\Users\\'+user+'\\AppData\\Roaming\\Mozilla\\Firefox\Profiles\\')
 		for directory in dirs:
 			if ".default" in directory:
 				return directory
@@ -126,9 +124,9 @@ def setConfig(systemType, configFile, browser, user):
 				cachePath = '/home/'+user+'/FILL ME IN WHEN YOU FIND THE LOCATION'
 				cookiePath = '/home/'+user+'/.mozilla/firefox/'+randchars+'/cookies.sqlite'
 			else:
-				histPath = 'C:\\Users\\'+user+'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\History'
-				cachePath = 'C:\\Users\\'+user+'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cache'
-				cookiePath = 'C:\\Users\\'+user+'\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies'
+				histPath = 'C:\\Users\\'+user+'\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\'+randchars+'\\places.sqlite'
+				cachePath = 'C:\\Users\\'+user+'\\AppData\\Local\\Mozilla\\Firefox\\Profiles\\'+randchars+'\\'
+				cookiePath = 'C:\\Users\\'+user+'\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\'+randchars+'\\cookies.sqlite'
 			if browsers[1]['history'] == []:
 				paths[systemType]['firefox']['history'].append(histPath)
 			if browsers[1]['cache'] == []:
@@ -136,24 +134,14 @@ def setConfig(systemType, configFile, browser, user):
 			if browsers[1]['cookies'] == []:
 				paths[systemType]['firefox']['cookies'].append(cookiePath)
 
-		if browsers[0] == 'edge':
-			histPath = 'C:\\Users\\'+user+'\\AppData\\Local\\FILL ME IN WHEN YOU FIND LOCATION'
-			cachePath = 'C:\\Users\\'+user+'\\AppData\\Local\\FILL ME IN WHEN YOU FIND LOCATION'
-			cookiePath = 'C:\\Users\\'+user+'\\AppData\\Local\\FILL ME IN WHEN YOU FIND LOCATION'
-			if browsers[1]['history'] == []:
-				paths[systemType]['edge']['history'].append(histPath)
-			if browsers[1]['cache'] == []:
-				paths[systemType]['edge']['cache'].append(cachePath)
-			if browsers[1]['cookies'] == []:
-				paths[systemType]['edge']['cookies'].append(cookiePath)
 	return
 
 def getCache(filename, browser):
 	return
 
 #TODO verify file exists in case a user gives wrong path or if not installed
-#TODO get from Edge
 def getHistory(filename, browser):
+	
 	connection = sqlite3.connect(filename)
 	connection.text_factory = str
 	cur = connection.cursor()
@@ -166,15 +154,13 @@ def getHistory(filename, browser):
 		for row in (cur.execute('SELECT url, title, visit_count, last_visit_time FROM urls')):
 			History.append(list(row))
 
-	# Insert else statement to get edge history. Stored in a sqlite file?
-
-	# return list that contains only entries with populated timestamps
+		# return list that contains only entries with populated timestamps
 	return list(hist for hist in History if hist[2])
 
 
 #TODO verify file exists in case a user gives wrong path or if not installed
-#TODO get from Edge
 def getCookies(filename, browser):
+	if not path.isfile(filename): raise Exception(f"File:{filename} not found.\nIf you know the location of the cookie file for {browser}, add it to the configuration file.")
 	connection = sqlite3.connect(filename)
 	connection.text_factory = str
 	cur = connection.cursor()
@@ -190,6 +176,7 @@ def getCookies(filename, browser):
 		return Cookies
 	return
 
+# print list in csv format
 def printData(data):
 	return
 
