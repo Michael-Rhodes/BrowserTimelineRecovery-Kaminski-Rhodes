@@ -141,7 +141,7 @@ def getCache(filename, browser):
 
 #TODO verify file exists in case a user gives wrong path or if not installed
 def getHistory(filename, browser):
-	
+	if not path.isfile(filename): raise Exception(f"File:{filename} not found.\nIf you know the location of the history file for {browser}, add it to the configuration file.")
 	connection = sqlite3.connect(filename)
 	connection.text_factory = str
 	cur = connection.cursor()
