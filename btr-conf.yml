@@ -1,7 +1,11 @@
 # File: btr-conf.yml
+#
 # Description: Used to specify the location of file for the Browser Timeline
 #	Recovery tool (btr.py). File locations are represented as lists because
 #	some browsers store data across multiple files.
+#
+# NOTE: This is not required for btr.py. It is used to specify locations of files
+#       that are not in their default locations.
 
 Linux:
   chrome:
