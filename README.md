@@ -1,6 +1,6 @@
 # BrowserTimelineRecovery-Kaminski-Rhodes
 A python tool for analyzing browser artifacts to potentially detect deleted browsing history. Works on Linux and Windows operating systems.
-Attempts to recover deleted browsing history based on browsing data such as cookies, cache, etc.
+Attempts to recover deleted browsing history based on other browsing data such as cookies, cache, etc.
 
 
 ### Usage
@@ -34,8 +34,8 @@ optional arguments:
 ### Use cases
 - Obtain a file containing history/cookie records is a readable format (CSV)
   - Example: ```python btr.py -b firefox -d cookies -o out.csv```
-- Recover deleted browsing history by comparing the timestamps of browsing records (such as cookie creation time) to that of a user's search history.
+- Recover deleted browsing history by comparing the timestamps of browsing records (e.g. cookie creation time) to that of a user's search history.
   - Example: ```python btr.py -b chrome -w 10000000```
 
 ### Current Condition
-Currently, the tool analyzes history or cookie records for Firefox and Chrome, with support on both Linux and Windows. When a user deletes browsing history, modern browsers often delete cache and cookies as well. Future work is needed to parse other browsing artifacts, such as offline website data, form and search history, and active logins, to aid in recovering a user's search history.
+Currently, the tool analyzes history and cookie records for Firefox and Chrome, with support on both Linux and Windows. When a user deletes browsing history, modern browsers often delete cache and cookies as well. Future work is needed to parse other browsing artifacts, such as offline website data, form and search history, and active logins, to aid in recovering a user's search history.
